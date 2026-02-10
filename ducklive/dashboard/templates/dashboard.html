@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦆 DuckLive Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body>
+    <header>
+        <h1>🦆 DuckLive</h1>
+        <div class="header-right">
+            <span class="client-count">📡 <span id="client-count">0</span> Clients</span>
+            <div id="server-status" class="status-badge stopped">OFFLINE</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Row 1: Status Cards -->
+        <section class="cards">
+            <div class="card">
+                <div class="card-icon">⏱️</div>
+                <div class="card-body">
+                    <div class="card-label">Uptime</div>
+                    <div class="card-value" id="uptime">--:--:--</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎬</div>
+                <div class="card-body">
+                    <div class="card-label">Frame Rate</div>
+                    <div class="card-value"><span id="fps">0</span> FPS</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🖥️</div>
+                <div class="card-body">
+                    <div class="card-label" id="gpu-name">GPU</div>
+                    <div class="card-value"><span id="gpu-util">0</span>%</div>
+                    <div class="card-sub"><span id="gpu-temp">0</span>°C · <span id="gpu-mem">0/0</span> MB</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">📡</div>
+                <div class="card-body">
+                    <div class="card-label">Feed Source</div>
+                    <div class="card-value" id="feed-status">Offline</div>
+                    <div class="card-sub" id="feed-source">--</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Row 2: Side-by-side Preview -->
+        <section class="preview-section">
+            <div class="preview-pair">
+                <div class="preview-box">
+                    <div class="preview-label">📷 Original</div>
+                    <div class="preview-container">
+                        <canvas id="preview-original" width="640" height="360"></canvas>
+                        <div class="preview-overlay" id="overlay-original">Waiting for video stream...</div>
+                    </div>
+                </div>
+                <div class="preview-box">
+                    <div class="preview-label">🎭 Processed</div>
+                    <div class="preview-container">
+                        <canvas id="preview-processed" width="640" height="360"></canvas>
+                        <div class="preview-overlay" id="overlay-processed">Waiting for video stream...</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Audio Level Meters -->
+            <div class="audio-meters">
+                <div class="meter-row">
+                    <span class="meter-label">🎤 Original Audio</span>
+                    <div class="meter-bar-bg"><div class="meter-bar" id="meter-original"></div></div>
+                    <span class="meter-value" id="meter-original-db">-∞ dB</span>
+                </div>
+                <div class="meter-row">
+                    <span class="meter-label">🔊 Processed Audio</span>
+                    <div class="meter-bar-bg"><div class="meter-bar meter-bar-processed" id="meter-processed"></div></div>
+                    <span class="meter-value" id="meter-processed-db">-∞ dB</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Row 3: Engine Controls -->
+        <section class="panels">
+            <!-- Face Swap -->
+            <div class="panel">
+                <div class="engine-header">
+                    <h2>🎭 Face Swap Engine</h2>
+                    <label class="toggle">
+                        <input type="checkbox" id="face-swap-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="engine-stats">
+                    <span class="stat">Model: <span id="face-model">Not loaded</span></span>
+                    <span class="stat">Latency: <span id="face-latency">0</span>ms</span>
+                </div>
+                <!-- Read-only: show which face is currently active -->
+                <div class="engine-info">
+                    <span class="info-label">Active Face:</span>
+                    <span class="info-value" id="current-face">None</span>
+                </div>
+            </div>
+
+            <!-- Voice Change -->
+            <div class="panel">
+                <div class="engine-header">
+                    <h2>🎤 Voice Change Engine</h2>
+                    <label class="toggle">
+                        <input type="checkbox" id="voice-change-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="engine-stats">
+                    <span class="stat">Model: <span id="voice-model">Not loaded</span></span>
+                    <span class="stat">Latency: <span id="voice-latency">0</span>ms</span>
+                </div>
+                <!-- Read-only: show which voice model is currently active -->
+                <div class="engine-info">
+                    <span class="info-label">Active Voice:</span>
+                    <span class="info-value" id="current-voice">None</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

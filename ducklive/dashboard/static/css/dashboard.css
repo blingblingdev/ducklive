@@ -1,0 +1,282 @@
+/* DuckLive Dashboard — Dark theme */
+
+:root {
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #1a1a2e;
+    --bg-card: #16213e;
+    --bg-panel: #1a1a2e;
+    --accent: #e94560;
+    --accent-green: #00d672;
+    --accent-yellow: #ffd93d;
+    --accent-blue: #4da6ff;
+    --text-primary: #eee;
+    --text-secondary: #999;
+    --text-muted: #666;
+    --border: #2a2a4a;
+    --radius: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+/* --- Header --- */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+header h1 { font-size: 24px; font-weight: 700; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.client-count { font-size: 13px; color: var(--text-secondary); }
+
+.status-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.status-badge.running { background: var(--accent-green); color: #000; }
+.status-badge.stopped { background: var(--text-muted); color: #fff; }
+.status-badge.error { background: var(--accent); color: #fff; }
+
+/* --- Main --- */
+main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+/* --- Status Cards --- */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--accent); }
+.card-icon { font-size: 28px; }
+.card-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+.card-value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+.card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* --- Preview Section --- */
+.preview-section {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.preview-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 900px) {
+    .preview-pair { grid-template-columns: 1fr; }
+}
+
+.preview-box { position: relative; }
+
+.preview-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.preview-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.preview-container canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.preview-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.7);
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.preview-overlay.hidden { display: none; }
+
+/* --- Audio Level Meters --- */
+.audio-meters {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.meter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.meter-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.meter-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #1e1e3a;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.meter-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-yellow), var(--accent));
+    border-radius: 4px;
+    transition: width 0.08s ease-out;
+}
+
+.meter-bar-processed {
+    background: linear-gradient(90deg, var(--accent-blue), #a855f7, var(--accent));
+}
+
+.meter-value {
+    font-size: 11px;
+    color: var(--text-muted);
+    width: 60px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Engine Panels --- */
+.panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .panels { grid-template-columns: 1fr; }
+}
+
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.engine-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.engine-header h2 { font-size: 16px; font-weight: 600; }
+
+.engine-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+.stat {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.stat span {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Read-only info row showing currently active face/voice */
+.engine-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.info-value {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* When a face/voice is actively set, highlight the value */
+.info-value.active {
+    color: var(--accent-green);
+}
+
+/* --- Toggle Switch --- */
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    inset: 0;
+    background: var(--text-muted);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+.toggle input:checked + .slider { background: var(--accent-green); }
+.toggle input:checked + .slider::before { transform: translateX(20px); }

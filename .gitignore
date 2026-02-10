@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual env
+.venv/
+venv/
+
+# AI Models (large binary files — download separately)
+models/*.onnx
+models/*.pt
+models/*.pth
+models/buffalo_l/
+
+# Pretrained weights (large binary files — download from HuggingFace)
+pretrained_weights/liveportrait/
+pretrained_weights/liveportrait_animals/
+pretrained_weights/insightface/
+pretrained_weights/.cache/
+
+# User data
+faces/*.jpg
+faces/*.png
+voices/*.pth
+voices/*.index
+
+# Keep directory structure
+!models/.gitkeep
+!faces/.gitkeep
+!voices/.gitkeep
+!pretrained_weights/.gitkeep
+
+# LivePortrait — only src/ is needed for the package
+liveportrait_src/assets/
+liveportrait_src/pretrained_weights/
+liveportrait_src/*.py
+liveportrait_src/requirements*.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

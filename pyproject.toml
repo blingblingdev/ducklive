@@ -1,0 +1,104 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ducklive"
+version = "0.1.0"
+description = "Real-time face swap + voice change network webcam"
+readme = "README.md"
+license = "Proprietary"
+requires-python = ">=3.11"
+dependencies = [
+    # Web & API
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "jinja2>=3.1",
+    "websockets>=12.0",
+    "httpx>=0.27",
+    "python-multipart>=0.0.9",
+
+    # Video & Audio
+    "opencv-python>=4.9",
+    "numpy>=1.26",
+    "Pillow>=10.2",
+
+    # AI - Face Swap
+    "onnxruntime>=1.17",
+
+    # AI - Voice Change (RVC core deps)
+    "torch>=2.2",
+    "torchaudio>=2.2",
+    "faiss-cpu>=1.7",
+
+    # LivePortrait deps
+    "scipy>=1.11",
+    "pyyaml>=6.0",
+
+    # Virtual Camera
+    "pyvirtualcam>=0.11",
+
+    # Service Discovery
+    "zeroconf>=0.131",
+
+    # Utils
+    "pydantic>=2.6",
+    "pydantic-settings>=2.1",
+    "rich>=13.7",
+    "click>=8.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.3",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+cuda = [
+    "onnxruntime-gpu>=1.17",
+]
+client = [
+    "websockets>=12.0",
+    "httpx>=0.27",
+    "opencv-python>=4.9",
+    "numpy>=1.26",
+    "pyvirtualcam>=0.11",
+    "zeroconf>=0.131",
+    "rich>=13.7",
+    "click>=8.1",
+    "pyaudio>=0.2.14",
+]
+
+[project.urls]
+Repository = "https://github.com/blingblingdev/ducklive"
+
+[project.scripts]
+ducklive = "ducklive.__main__:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ducklive", "liveportrait_src/src"]
+
+[tool.hatch.build.targets.wheel.sources]
+"liveportrait_src/src" = "ducklive/_lp_src"
+
+[tool.hatch.build.targets.wheel.force-include]
+"liveportrait_src/src/config/models.yaml" = "ducklive/_lp_src/config/models.yaml"
+"liveportrait_src/src/utils/resources/clip_embedding_68.pkl" = "ducklive/_lp_src/utils/resources/clip_embedding_68.pkl"
+"liveportrait_src/src/utils/resources/clip_embedding_9.pkl" = "ducklive/_lp_src/utils/resources/clip_embedding_9.pkl"
+"liveportrait_src/src/utils/resources/lip_array.pkl" = "ducklive/_lp_src/utils/resources/lip_array.pkl"
+"liveportrait_src/src/utils/resources/mask_template.png" = "ducklive/_lp_src/utils/resources/mask_template.png"
+"liveportrait_src/src/utils/dependencies/insightface/data/objects/meanshape_68.pkl" = "ducklive/_lp_src/utils/dependencies/insightface/data/objects/meanshape_68.pkl"
+"liveportrait_src/src/utils/dependencies/insightface/data/images/Tom_Hanks_54745.png" = "ducklive/_lp_src/utils/dependencies/insightface/data/images/Tom_Hanks_54745.png"
+"liveportrait_src/src/utils/dependencies/XPose/models/UniPose/ops/src/cpu/ms_deform_attn_cpu.cpp" = "ducklive/_lp_src/utils/dependencies/XPose/models/UniPose/ops/src/cpu/ms_deform_attn_cpu.cpp"
+"liveportrait_src/src/utils/dependencies/XPose/models/UniPose/ops/src/cpu/ms_deform_attn_cpu.h" = "ducklive/_lp_src/utils/dependencies/XPose/models/UniPose/ops/src/cpu/ms_deform_attn_cpu.h"
+"liveportrait_src/src/utils/dependencies/XPose/models/UniPose/ops/src/cuda/ms_deform_attn_cuda.cu" = "ducklive/_lp_src/utils/dependencies/XPose/models/UniPose/ops/src/cuda/ms_deform_attn_cuda.cu"
+"liveportrait_src/src/utils/dependencies/XPose/models/UniPose/ops/src/cuda/ms_deform_attn_cuda.h" = "ducklive/_lp_src/utils/dependencies/XPose/models/UniPose/ops/src/cuda/ms_deform_attn_cuda.h"
+"liveportrait_src/src/utils/dependencies/XPose/models/UniPose/ops/src/ms_deform_attn.h" = "ducklive/_lp_src/utils/dependencies/XPose/models/UniPose/ops/src/ms_deform_attn.h"
+"liveportrait_src/src/utils/dependencies/XPose/models/UniPose/ops/src/vision.cpp" = "ducklive/_lp_src/utils/dependencies/XPose/models/UniPose/ops/src/vision.cpp"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]

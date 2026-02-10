@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦆 DuckLive</title>
+    <link rel="stylesheet" href="/static/css/client.css">
+</head>
+<body>
+    <header>
+        <h1>🦆 DuckLive</h1>
+        <div class="header-right">
+            <div id="feed-status" class="status-badge disconnected">未连接</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Capture Controls -->
+        <section class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label>📹 摄像头</label>
+                    <select id="camera-select"></select>
+                </div>
+                <div class="control-group">
+                    <label>🎤 麦克风</label>
+                    <select id="mic-select"></select>
+                </div>
+                <button id="test-btn" class="btn" style="background:#666;color:#fff" onclick="testCamera()">
+                    🔍 测试
+                </button>
+                <button id="start-btn" class="btn btn-primary" onclick="toggleCapture()">
+                    ▶ 开始
+                </button>
+            </div>
+        </section>
+
+        <!-- AI Engine Controls -->
+        <section class="engine-panel">
+            <div class="engine-row">
+                <!-- Face Swap -->
+                <div class="engine-card" id="face-card">
+                    <div class="engine-header">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="face-toggle" onchange="toggleEngine('face_swap', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="engine-title">🎭 换脸</span>
+                        <span class="engine-status" id="face-engine-status"></span>
+                    </div>
+                    <div class="engine-body">
+                        <div class="face-grid" id="face-grid">
+                            <div class="face-empty">服务器无可用人脸</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Change -->
+                <div class="engine-card" id="voice-card">
+                    <div class="engine-header">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="voice-toggle" onchange="toggleEngine('voice_change', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="engine-title">🎤 变声</span>
+                        <span class="engine-status" id="voice-engine-status"></span>
+                    </div>
+                    <div class="engine-body">
+                        <div class="voice-list" id="voice-list">
+                            <div class="face-empty">服务器无可用声音模型</div>
+                        </div>
+                        <div class="pitch-control">
+                            <label>音高调节</label>
+                            <div class="pitch-row">
+                                <input type="range" id="pitch-slider" min="-12" max="12" value="0"
+                                       oninput="updatePitchLabel(this.value)" onchange="setPitch(this.value)">
+                                <span id="pitch-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Side-by-side Preview -->
+        <section class="preview-section">
+            <div class="preview-pair">
+                <div class="preview-box">
+                    <div class="preview-label">📷 本地摄像头</div>
+                    <div class="preview-container">
+                        <video id="local-video" autoplay muted playsinline></video>
+                        <div class="preview-overlay" id="overlay-local">点击「开始」采集摄像头</div>
+                    </div>
+                </div>
+                <div class="preview-box">
+                    <div class="preview-label">🎭 AI 处理后</div>
+                    <div class="preview-container">
+                        <canvas id="processed-canvas" width="1280" height="720"></canvas>
+                        <div class="preview-overlay" id="overlay-processed">等待服务器处理...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="stats-bar">
+            <span>📡 服务器: <span id="server-addr">--</span></span>
+            <span>⬆️ 发送: <span id="frames-sent">0</span> 帧</span>
+            <span>⬇️ 接收: <span id="frames-received">0</span> 帧</span>
+            <span>🎬 FPS: <span id="fps">0</span></span>
+            <span>📹 虚拟摄像头: <span id="vcam-status">--</span></span>
+        </section>
+    </main>
+
+    <script src="/static/js/client.js"></script>
+</body>
+</html>
