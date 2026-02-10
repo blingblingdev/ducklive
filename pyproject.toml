@@ -34,6 +34,10 @@ dependencies = [
     # LivePortrait deps
     "scipy>=1.11",
     "pyyaml>=6.0",
+    "imageio>=2.34",
+
+    # InsightFace (fallback face swap engine)
+    "insightface>=0.7",
 
     # Virtual Camera
     "pyvirtualcam>=0.11",

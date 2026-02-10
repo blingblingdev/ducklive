@@ -15,6 +15,7 @@ import asyncio
 import json as _json
 import logging
 import signal
+import sys
 import time
 from pathlib import Path
 
@@ -446,9 +447,11 @@ def start_server(
         )
         uvi_server = uvicorn.Server(uvi_config)
 
-        loop = asyncio.get_event_loop()
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler(sig, lambda: asyncio.create_task(server.stop()))
+        # Register signal handlers for graceful shutdown (Unix only)
+        if sys.platform != "win32":
+            loop = asyncio.get_event_loop()
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                loop.add_signal_handler(sig, lambda: asyncio.create_task(server.stop()))
 
         try:
             await uvi_server.serve()

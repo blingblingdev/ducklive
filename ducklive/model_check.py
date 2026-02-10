@@ -14,7 +14,7 @@ ALL_MODELS: dict[str, dict[str, str]] = {
     # Core models
     "models/inswapper_128.onnx": {
         "desc": "InsightFace face swap model",
-        "url": "https://huggingface.co/deepinsight/inswapper/resolve/main/inswapper_128.onnx",
+        "url": "https://huggingface.co/ezioruan/inswapper_128.onnx/resolve/main/inswapper_128.onnx",
     },
     "models/hubert_base.pt": {
         "desc": "HuBERT base model for voice feature extraction",
