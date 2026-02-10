@@ -25,7 +25,6 @@ dependencies = [
 
     # AI - Face Swap
     "onnxruntime>=1.17",
-    "onnx>=1.15",
 
     # AI - Voice Change (RVC core deps)
     # For CUDA: pre-install torch before ducklive so pip won't overwrite:
@@ -38,6 +37,11 @@ dependencies = [
     "scipy>=1.11",
     "pyyaml>=6.0",
     "imageio>=2.34",
+    "onnx>=1.15",
+    "requests>=2.31",
+    "scikit-image>=0.22",
+    "tqdm>=4.66",
+    "torchvision>=0.17",
 
     # Virtual Camera
     "pyvirtualcam>=0.11",
