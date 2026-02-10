@@ -27,8 +27,8 @@ dependencies = [
     "onnxruntime>=1.17",
 
     # AI - Voice Change (RVC core deps)
-    "torch>=2.2",
-    "torchaudio>=2.2",
+    # NOTE: torch/torchaudio excluded — install separately with CUDA:
+    #   pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
     "faiss-cpu>=1.7",
 
     # LivePortrait deps

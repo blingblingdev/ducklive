@@ -86,14 +86,19 @@ WebSocket 二进制帧格式：
 ## Installation
 
 ```bash
-# Install from GitHub (requires Python 3.11+)
+# 1. Install PyTorch with CUDA first (server/GPU machine)
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
+
+# 2. Install DuckLive
 pip install git+https://github.com/blingblingdev/ducklive.git
 
-# With CUDA support (recommended for GPU machines)
-pip install "ducklive[cuda] @ git+https://github.com/blingblingdev/ducklive.git"
-
-# Check required models
+# 3. Models auto-download on first run, or check manually:
 ducklive check-models
+```
+
+Update DuckLive (without touching PyTorch):
+```bash
+pip install --force-reinstall --no-deps git+https://github.com/blingblingdev/ducklive.git
 ```
 
 ## 快速开始
