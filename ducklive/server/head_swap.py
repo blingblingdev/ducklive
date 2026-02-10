@@ -58,18 +58,22 @@ def _make_face_mask(size: int = 512) -> np.ndarray:
     """Create an elliptical face mask (3-channel, uint8) for paste-back.
 
     The default mask_template.png is a white rectangle that leaks the
-    generator's white background. This elliptical mask covers only the
-    face region and tapers smoothly at the edges.
+    generator's white background. This elliptical mask covers the full
+    head region and tapers smoothly with heavy feathering.
     """
-    mask = np.zeros((size, size, 3), dtype=np.uint8)
-    center = (size // 2, size // 2)
-    # Ellipse covers ~55% width, ~70% height of the crop (face is taller than wide)
-    axes = (int(size * 0.28), int(size * 0.36))
-    cv2.ellipse(mask, center, axes, 0, 0, 360, (255, 255, 255), -1)
-    # Generous blur for smooth feathering (sigma=0 lets OpenCV compute from ksize)
-    ksize = size // 4 | 1  # ensure odd, ~128 for 512
+    mask = np.zeros((size, size), dtype=np.uint8)
+    # Face sits slightly above center in the crop
+    center = (size // 2, int(size * 0.46))
+    # Large ellipse covering full head: ~72% width, ~82% height
+    axes = (int(size * 0.36), int(size * 0.41))
+    cv2.ellipse(mask, center, axes, 0, 0, 360, 255, -1)
+    # Erode to create a buffer zone, preventing hard edges
+    erode_k = max(size // 40, 3)  # ~12 for 512
+    mask = cv2.erode(mask, np.ones((erode_k, erode_k), np.uint8), iterations=1)
+    # Very heavy Gaussian blur for maximum feathering
+    ksize = size // 2 | 1  # ~255 for 512, much larger than before
     mask = cv2.GaussianBlur(mask, (ksize, ksize), 0)
-    return mask
+    return cv2.merge([mask, mask, mask])
 
 
 # Pre-built elliptical mask at crop resolution (512x512)
@@ -82,6 +86,42 @@ def _get_face_mask(size: int = 512) -> np.ndarray:
     if _FACE_MASK_512 is None or _FACE_MASK_512.shape[0] != size:
         _FACE_MASK_512 = _make_face_mask(size)
     return _FACE_MASK_512
+
+
+def _exclude_white_bg(generated: np.ndarray, base_mask: np.ndarray, crop_size: int) -> np.ndarray:
+    """Modulate base mask to exclude white generator background.
+
+    The LivePortrait generator produces white/light-gray background around
+    the face. If the mask extends into those areas, white bleeds into the
+    composite. This detects near-white regions and reduces the mask there.
+
+    Args:
+        generated: RGB uint8, 256x256 (generator output I_p)
+        base_mask: uint8 3-channel mask at crop_size resolution
+        crop_size: target mask resolution (e.g. 512)
+
+    Returns:
+        Modulated uint8 3-channel mask at crop_size resolution.
+    """
+    gray = cv2.cvtColor(generated, cv2.COLOR_RGB2GRAY).astype(np.float32)
+    # Smooth ramp: 1.0 for pixels < 235, 0.0 for pixels > 252
+    content_factor = np.clip((252.0 - gray) / 17.0, 0.0, 1.0)
+    # Resize to crop_size
+    if content_factor.shape[0] != crop_size:
+        content_factor = cv2.resize(
+            content_factor, (crop_size, crop_size), interpolation=cv2.INTER_LINEAR
+        )
+    # Smooth the content mask to avoid sharp transitions
+    k = crop_size // 10 | 1  # ~51 for 512
+    content_factor = cv2.GaussianBlur(content_factor, (k, k), 0)
+    # Apply to base mask
+    mask_f = base_mask.astype(np.float32) / 255.0
+    if mask_f.ndim == 3:
+        content_3ch = np.stack([content_factor] * 3, axis=-1)
+        mask_f = mask_f * content_3ch
+    else:
+        mask_f = mask_f * content_factor
+    return (mask_f * 255.0).astype(np.uint8)
 
 
 class HeadSwapEngine:
@@ -333,11 +373,12 @@ class HeadSwapEngine:
         out = self._wrapper.warp_decode(self._source_feature_3d, x_s, x_d_i_new)
         I_p = self._wrapper.parse_output(out['out'])[0]  # 256x256x3, RGB, uint8
 
-        # --- Step 6: Paste back with elliptical face mask ---
-        # Use a face-shaped elliptical mask instead of the rectangular
-        # mask_template.png, which leaks the generator's white background.
+        # --- Step 6: Paste back with content-aware face mask ---
+        # Use an elliptical base mask modulated by content detection to
+        # exclude the generator's white background from the composite.
         crop_size = self._cropper.crop_cfg.dsize
-        face_mask = _get_face_mask(crop_size)
+        base_mask = _get_face_mask(crop_size)
+        face_mask = _exclude_white_bg(I_p, base_mask, crop_size)
         mask_ori_float = prepare_paste_back(
             face_mask,
             driving_M_c2o,
